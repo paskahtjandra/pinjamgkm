@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,16 +45,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.pinjamgkm.ui.components.Cards
+import com.example.pinjamgkm.ui.components.TimeCard
+import com.example.pinjamgkm.ui.components.TimeCardPreview
 
 @Composable
 fun Navigation(){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.ScreenDaftarMahasiswa.route){
-        composable(route = Screen.ScreenDaftarMahasiswa.route){
-            DaftarMahasiswa(navController = navController)
+    NavHost(navController = navController, startDestination = Screen.ScreenHomePage.route){
+        composable(route = Screen.ScreenHomePage.route){
+            HomePage(navController = navController)
         }
-        composable(route = Screen.ScreenDaftarPeminjaman.route){
-            DaftarPeminjaman(navController = navController)
+        composable(route = Screen.ScreenDetailPeminjaman.route){
+            DetailPeminjaman(navController = navController)
         }
     }
 }
@@ -61,7 +65,7 @@ fun Navigation(){
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DaftarMahasiswa(navController: NavController) {
+fun HomePage(navController: NavController) {
     var presses by remember { mutableStateOf(0) }
 
     Scaffold(
@@ -107,7 +111,7 @@ fun DaftarMahasiswa(navController: NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 20.dp),
-                            text = "Daftar Mahasiswa",
+                            text = "HomePage",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
@@ -124,39 +128,21 @@ fun DaftarMahasiswa(navController: NavController) {
                 .padding(top = it.calculateTopPadding() + 12.dp, start = 12.dp, end = 12.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            var nim by remember { mutableStateOf("") }
-            var nama by remember { mutableStateOf("") }
-            var notelp by remember { mutableStateOf("") }
-            var lembaga by remember { mutableStateOf("") }
+            var kegiatan by remember { mutableStateOf("") }
 
+            Cards()
+            TimeCard()
+            TimeCard()
             Material3OutlinedTextField(
-                label = "NIM",
-                placeholder = "Ex: 205150707111026",
-                value = nim,
-                onValueChange = { nim = it },
-            )
-            Material3OutlinedTextField(
-                label = "Nama",
-                placeholder = "Ex: Bambang Suprapto",
-                value = nama,
-                onValueChange = { nama = it },
-            )
-            Material3OutlinedTextField(
-                label = "No Telefon",
-                placeholder = "08........",
-                value = notelp,
-                onValueChange = { notelp = it },
-            )
-            Material3OutlinedTextField(
-                label = "Lembaga / Komunitas",
-                placeholder = "Ex: BEM Fakultas Ilmu Komputer",
-                value = lembaga,
-                onValueChange = { lembaga = it },
+                label = "Keterangan Kegiatan",
+                placeholder = "Ex: Rapat Besar Bersama",
+                value = kegiatan,
+                onValueChange = { kegiatan = it },
             )
 
             Button(
                 onClick = {
-                          navController.navigate(Screen.ScreenDaftarPeminjaman.route)
+                          navController.navigate(Screen.ScreenDetailPeminjaman.route)
                 },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
                 modifier = Modifier
@@ -176,7 +162,7 @@ fun DaftarMahasiswa(navController: NavController) {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DaftarPeminjaman(navController: NavController) {
+fun DetailPeminjaman(navController: NavController) {
     var presses by remember { mutableStateOf(0) }
 
     Scaffold(
@@ -222,7 +208,7 @@ fun DaftarPeminjaman(navController: NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 20.dp),
-                            text = "Daftar Peminjaman",
+                            text = "Detail Peminjaman",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
@@ -239,9 +225,7 @@ fun DaftarPeminjaman(navController: NavController) {
                 .padding(top = it.calculateTopPadding() + 12.dp, start = 12.dp, end = 12.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            var nim by remember { mutableStateOf("") }
-            var nama by remember { mutableStateOf("") }
-            var tanggal by remember { mutableStateOf("") }
+
             var lembaga by remember { mutableStateOf("") }
 
             DropDown()
@@ -257,7 +241,7 @@ fun DaftarPeminjaman(navController: NavController) {
 
             Button(
                 onClick = {
-                    navController.navigate(Screen.ScreenDaftarMahasiswa.route)
+                    navController.navigate(Screen.ScreenHomePage.route)
                 },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
                 modifier = Modifier
