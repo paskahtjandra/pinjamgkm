@@ -34,6 +34,7 @@ fun Material3OutlinedTextField(
 
     OutlinedTextField(
         value = value,
+        colors =  OutlinedTextFieldDefaults.colors(Color.Black),
         textStyle = MaterialTheme.typography.bodySmall,
         onValueChange = { newValue ->
             onValueChange(newValue)

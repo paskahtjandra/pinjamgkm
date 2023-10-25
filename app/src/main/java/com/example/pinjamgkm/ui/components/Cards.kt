@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,13 +30,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.pinjamgkm.DetailPeminjaman
+import com.example.pinjamgkm.HomePage
+import com.example.pinjamgkm.Navigation
+import com.example.pinjamgkm.Screen
 import com.example.pinjamgkm.ui.theme.PinjamgkmTheme
 
 @Composable
-fun Cards() {
+fun Cards(navController: NavController) {
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable {
+                navController.navigate(Screen.ScreenDetailPeminjaman.route)
+            }
             .height(140.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         border = BorderStroke(color = Color(0xFFE2E8F0), width = 1.dp)
@@ -92,7 +105,7 @@ fun Cards() {
 fun CardsPreview() {
     PinjamgkmTheme {
         Column {
-            Cards()
+            Cards(rememberNavController())
         }
     }
 }

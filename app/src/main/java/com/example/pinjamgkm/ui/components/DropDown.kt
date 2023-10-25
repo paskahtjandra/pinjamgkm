@@ -13,8 +13,10 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -29,97 +31,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
+import com.example.pinjamgkm.ui.components.PinjamGKM
+import com.example.pinjamgkm.ui.theme.PinjamgkmTheme
 
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun DropDown(
-//    label: String,
-//    placeholder: String,
-//    value: String,
-//    onValueChange: (String) -> Unit
-//) {
-//    val options = listOf("Bambang Herlambang", "Baba Sugita", "Hendry Margono")
-//    var expanded by remember { mutableStateOf(false) }
-//    var selectedOptionText by remember { mutableStateOf(options[0]) }
-//    var textFieldValue by remember { mutableStateOf("") }
-//    val filteredOptions = options.filter { it.contains(textFieldValue, ignoreCase = true) }
-//
-//    Text(
-//        label,
-//        Modifier
-//            .padding(start = 15.dp)
-//            .offset(y = 5.dp),
-//        style = MaterialTheme.typography.labelMedium,
-//        fontWeight = FontWeight.Medium,
-//    )
-//
-//    OutlinedTextField(
-//        onValueChange = {newtext ->
-//            textFieldValue = newtext
-//            expanded = true
-//        },
-////        #tetap menyerah dan jangansmgt
-//        trailingIcon = {
-//            IconButton(onClick = { expanded = true }) {
-//                Icon(Icons.Filled.ArrowDropDown, contentDescription = null)
-//            }
-//        },
-//        value = textFieldValue,
-//        textStyle = MaterialTheme.typography.bodySmall,
-//        placeholder = {
-//            Text(
-//                text = placeholder,
-//                style = MaterialTheme.typography.bodySmall,
-//                color = MaterialTheme.colorScheme.tertiary
-//            )
-//        },
-//
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .background(
-//                Color.White,
-//                shape = RoundedCornerShape(22.dp)
-//            ),
-//        shape = MaterialTheme.shapes.medium
-//    )
-//
-//    DropdownMenu(
-//        expanded = expanded,
-//        onDismissRequest = { expanded = false },
-//        modifier = Modifier.fillMaxWidth()
-//    ) {
-////        options.filter { it.contains(textFieldValue, ignoreCase = true) }
-////        options.forEach { selectionOption ->
-////            DropdownMenuItem(
-////                text = { Text(text = selectionOption) },
-////                onClick = {
-////                    selectedOptionText = selectionOption
-////                    expanded = false
-////                }
-////            )
-////        }
-//        if (filteredOptions.isEmpty()) {
-//            DropdownMenuItem(
-//                text = { Text(text = "No options found") },
-//                onClick = {})
-//        } else {
-//            filteredOptions.forEach { selectionOption ->
-//                DropdownMenuItem(
-//                    text = { Text(text = selectionOption) },
-//                    onClick = {
-//                        selectedOptionText = selectionOption
-//                        textFieldValue = selectionOption
-//                        expanded = false
-//                    }
-//                )
-//            }
-//        }
-//    }
-//}
-
-val all = listOf("aaa", "baa", "aab", "abb", "bab","ababa","abbaaabb")
+val all = listOf("aaa", "baa", "aab", "abb", "bab", "ababa", "abbaaabb")
 
 val dropDownOptions = mutableStateOf(listOf<String>())
 val textFieldValue = mutableStateOf(TextFieldValue())
@@ -156,25 +74,26 @@ fun TextFieldWithDropdown(
     list: List<String>,
     label: String = ""
 ) {
-    Text(
-        label,
-        Modifier
-            .padding(start = 15.dp)
-            .offset(y = 5.dp),
-        style = MaterialTheme.typography.labelMedium,
-        fontWeight = FontWeight.Medium,
-    )
     Box() {
         var expanded by remember { mutableStateOf(dropDownExpanded) }
 
         OutlinedTextField(
+            colors =  OutlinedTextFieldDefaults.colors(Color.Black),
+            placeholder = {
+                Text(
+                    text = "Cari Mahasiswa",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+            },
             trailingIcon = {
                 IconButton(onClick = {
                     onDismissRequest()
                     setValue(TextFieldValue(value.text))
                     expanded = true
-                }) {
-                    Icon(Icons.Filled.ArrowDropDown, contentDescription = null)
+                })
+                {
+                    Icon(Icons.Filled.ArrowDropDown, contentDescription = null,tint = Color.Black)
                 }
             },
             modifier = Modifier
@@ -214,5 +133,13 @@ fun TextFieldWithDropdown(
                 })
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TitlePreview() {
+    PinjamgkmTheme {
+        DropDown()
     }
 }

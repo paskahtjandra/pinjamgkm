@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.example.pinjamgkm.ui.theme.PinjamgkmTheme
 
 @Composable
@@ -40,7 +41,9 @@ fun TimeCard() {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
 
         ) {
             Column(
@@ -86,7 +89,7 @@ fun TimeCard() {
 fun TimeCardPreview() {
     PinjamgkmTheme {
         Column {
-            Cards()
+            Cards(rememberNavController())
         }
     }
 }
