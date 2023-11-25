@@ -25,8 +25,11 @@ import com.example.pinjamgkm.ui.components.Cards
 import com.example.pinjamgkm.ui.components.Filters
 import com.example.pinjamgkm.ui.components.PinjamGKM
 import com.example.pinjamgkm.ui.peminjamanList
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Locale
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -34,6 +37,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun HomePage(navController: NavController) {
     var lazyColumnItems by remember { mutableStateOf(peminjamanList) }
+    val enteredName by remember { mutableStateOf("") }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -69,6 +73,18 @@ fun HomePage(navController: NavController) {
                             peminjamanList.filter { it.status == "Dalam Peminjaman" }
                         }
 
+                        "Hari ini" -> {
+                            // Filter the items based on the current date
+                            val currentDate = getCurrentDate()
+                            peminjamanList.filter { it.tanggalPinjam == currentDate }
+                        }
+
+                        "Besok" -> {
+                            // Filter the items based on tomorrow's date
+                            val tomorrowDate = getTomorrowDate()
+                            peminjamanList.filter { it.tanggalPinjam == tomorrowDate }
+                        }
+
                         else -> {
                             // Handle other filters or default case
                             peminjamanList
@@ -86,4 +102,17 @@ fun HomePage(navController: NavController) {
             }
         }
     }
+}
+
+private fun getCurrentDate(): String {
+    val calendar = Calendar.getInstance()
+    val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    return dateFormat.format(calendar.time)
+}
+
+private fun getTomorrowDate(): String {
+    val calendar = Calendar.getInstance()
+    calendar.add(Calendar.DAY_OF_YEAR, 1)
+    val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    return dateFormat.format(calendar.time)
 }

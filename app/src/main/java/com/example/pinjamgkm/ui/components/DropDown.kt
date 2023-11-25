@@ -35,11 +35,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.example.pinjamgkm.ui.components.PinjamGKM
+import com.example.pinjamgkm.ui.peminjamanList
 import com.example.pinjamgkm.ui.theme.PinjamgkmTheme
 
-val all = listOf("aaa", "baa", "aab", "abb", "bab", "ababa", "abbaaabb")
+val all = peminjamanList.map {it.nama}
 
-val dropDownOptions = mutableStateOf(listOf<String>())
+val dropDownOptions = mutableStateOf(all)
 val textFieldValue = mutableStateOf(TextFieldValue())
 val dropDownExpanded = mutableStateOf(false)
 fun onDropdownDismissRequest() {
@@ -122,7 +123,7 @@ fun TextFieldWithDropdown(
         ) {
             list.forEach { text ->
                 DropdownMenuItem({
-                    Text(text = text)
+                    Text(text = text, style = MaterialTheme.typography.bodySmall)
                 }, onClick = {
                     setValue(
                         TextFieldValue(
