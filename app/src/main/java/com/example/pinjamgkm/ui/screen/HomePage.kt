@@ -25,13 +25,15 @@ import com.example.pinjamgkm.ui.components.Cards
 import com.example.pinjamgkm.ui.components.Filters
 import com.example.pinjamgkm.ui.components.PinjamGKM
 import com.example.pinjamgkm.ui.peminjamanList
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavController) {
-    var presses by remember { mutableStateOf(0) }
+    var lazyColumnItems by remember { mutableStateOf(peminjamanList) }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -47,21 +49,40 @@ fun HomePage(navController: NavController) {
         var activeButton by remember { mutableStateOf(0) }
         PinjamGKM()
         DropDown()
-        val filters = listOf("Hari ini", "Besok", "Sudah Selesai", "Dalam Peminjaman")
+        val filters = listOf("Hari ini", "Besok", "Belum Dipinjam", "Dalam Peminjaman")
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(filters.size) { index ->
                 Filters(
                     label = filters[index],
                     isActive = activeButton == index
-                ) { activeButton = index }
+                ) {
+                    activeButton = index
+
+                    lazyColumnItems = when (filters[index]) {
+                        "Belum Dipinjam" -> {
+                            // Filter the items based on the selected filter
+                            peminjamanList.filter { it.status == "Belum Dipinjam" }
+                        }
+
+                        "Dalam Peminjaman" -> {
+                            // Filter the items based on the selected filter
+                            peminjamanList.filter { it.status == "Dalam Peminjaman" }
+                        }
+
+                        else -> {
+                            // Handle other filters or default case
+                            peminjamanList
+                        }
+                    }
+                }
             }
         }
         LazyColumn(
             Modifier.padding(top = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(peminjamanList.size) { index ->
-                Cards(navController, peminjamanList[index])
+            items(lazyColumnItems.size) { index ->
+                Cards(navController, lazyColumnItems[index])
             }
         }
     }

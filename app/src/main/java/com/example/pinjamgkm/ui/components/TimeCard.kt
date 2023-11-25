@@ -24,9 +24,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.example.pinjamgkm.ui.theme.PinjamgkmTheme
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
-fun TimeCard() {
+fun TimeCard(
+    jamPinjam: String,
+    jamSelesai: String,
+) {
+    // Change The Jam Pinjam Format
+    val parser = SimpleDateFormat("hh:mm:ss a", Locale.US)
+    val parsedTime = parser.parse(jamPinjam)
+
+    // Format the Jam Pinjam
+    val formatter = SimpleDateFormat("HH:mm", Locale.US)
+    val jamPinjamFormatted = formatter.format(parsedTime)
+
+    // Change The Jam Pinjam Format
+    val parser2 = SimpleDateFormat("hh:mm:ss a", Locale.US)
+    val parsedTime2 = parser2.parse(jamSelesai)
+
+    // Format the Jam Pinjam
+    val formatter2 = SimpleDateFormat("HH:mm", Locale.US)
+    val jamSelesaiFormatted = formatter2.format(parsedTime2)
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,7 +72,7 @@ fun TimeCard() {
                     color = MaterialTheme.colorScheme.secondary,
                 )
                 Text(
-                    text = "07:00",
+                    text = jamPinjamFormatted,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.secondary,
                 )
@@ -65,13 +86,13 @@ fun TimeCard() {
             Column(
             ) {
                 Text(
-                    text = "Jam Masuk",
+                    text = "Jam Keluar",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.secondary,
                 )
                 Text(
-                    text = "07:00",
+                    text = jamSelesaiFormatted,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.secondary,
                 )

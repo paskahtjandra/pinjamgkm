@@ -4,16 +4,22 @@ import Material3OutlinedTextField
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +46,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.pinjamgkm.ARGUMENT_PEMINJAMANS
 import com.example.pinjamgkm.Screen
 import com.example.pinjamgkm.customShape
 import com.example.pinjamgkm.model.Peminjaman
@@ -54,21 +62,21 @@ import java.net.URLDecoder
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailPeminjaman(navController: NavController) {
-    var presses by remember { mutableStateOf(0) }
     val view = LocalView.current
+
+    val gson = Gson()
+    val encodedPeminjamansJson = rememberSaveable {
+        navController.currentBackStackEntry?.arguments?.getString(ARGUMENT_PEMINJAMANS.PEMINJAMANS_JSON) ?: ""
+    }
+    val decodedPeminjamansJson = URLDecoder.decode(encodedPeminjamansJson, "UTF-8")
+    val peminjamans = gson.fromJson(decodedPeminjamansJson, Peminjaman::class.java)
+
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = Color(0xFF002647).toArgb()
         }
     }
-
-//    val gson = Gson()
-//    val encodedNewsJson = rememberSaveable {
-//        navController.currentBackStackEntry?.arguments?.getString("peminjaman") ?: ""
-//    }
-//    val decodedNewsJson = URLDecoder.decode(encodedNewsJson, "UTF-8")
-//    val peminjaman = gson.fromJson(decodedNewsJson, Peminjaman::class.java)
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -135,16 +143,57 @@ fun DetailPeminjaman(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             var kegiatan by remember { mutableStateOf("") }
-            DetailCard(navController, peminjamanList[0])
-            TimeCard()
-            TimeCard()
+            DetailCard(navController, peminjamans)
+            TimeCard(
+                jamPinjam = peminjamans.jam_pinjam,
+                jamSelesai = peminjamans.jam_selesai,
+            )
             Material3OutlinedTextField(
                 label = "Keterangan Kegiatan",
-                placeholder = "Ex: Rapat Besar Bersama",
-                value = peminjamanList[0].keterangan,
-                onValueChange = { kegiatan = it },
+                value = peminjamans.keperluan,
+                onValueChange = {  }
             )
-
+            Row(
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+                ){
+                Button(
+                    onClick = { },
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                ) {
+                    Text(
+                        text = " Buka Ruangan ",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                Button(
+                    onClick = { },
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                ) {
+                    Text(
+                        text = " Kunci Ruangan ",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+            Button(
+                onClick = { },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+            ) {
+                Text(
+                    text = "Update Status",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
     }
 }

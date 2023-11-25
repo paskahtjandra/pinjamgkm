@@ -19,7 +19,6 @@ import com.example.pinjamgkm.ui.theme.PinjamgkmTheme
 @Composable
 fun Material3OutlinedTextField(
     label: String,
-    placeholder: String,
     value: String,
     onValueChange: (String) -> Unit
 ) {
@@ -33,20 +32,12 @@ fun Material3OutlinedTextField(
     )
 
     OutlinedTextField(
+        readOnly = true,
         value = value,
-        colors =  OutlinedTextFieldDefaults.colors(Color.Black),
+        colors = OutlinedTextFieldDefaults.colors(focusedTextColor = Color.Black, unfocusedTextColor = Color.Black),
         textStyle = MaterialTheme.typography.bodySmall,
-        onValueChange = { newValue ->
-            onValueChange(newValue)
+        onValueChange = {
         },
-        placeholder = {
-            Text(
-                text = placeholder,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.tertiary
-            )
-        },
-
         modifier = Modifier
             .fillMaxWidth()
             .background(
@@ -66,7 +57,6 @@ fun Material3OutlinedTextFieldPreview() {
         Column {
             Material3OutlinedTextField(
                 label = "Label Text",
-                placeholder = "Placeholder Text",
                 value = text,
                 onValueChange = { text = it }
             )

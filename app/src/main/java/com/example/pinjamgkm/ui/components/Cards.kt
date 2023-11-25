@@ -1,5 +1,6 @@
 package com.example.pinjamgkm.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,22 +24,34 @@ import androidx.navigation.NavController
 import com.example.pinjamgkm.Screen
 import com.example.pinjamgkm.model.Peminjaman
 import com.example.pinjamgkm.ui.peminjamanList
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun Cards(
     navController: NavController,
-    peminjaman: Peminjaman,
+    peminjaman: Peminjaman
 ) {
+// Change The Jam Pinjam Format
+    val parser = SimpleDateFormat("hh:mm:ss a", Locale.US)
+    val parsedTime = parser.parse(peminjaman.jam_pinjam)
 
+    // Format the Jam Pinjam
+    val formatter = SimpleDateFormat("HH:mm", Locale.US)
+    val jamPinjamFormatted = formatter.format(parsedTime)
+
+    // Change The Jam Pinjam Format
+    val parser2 = SimpleDateFormat("hh:mm:ss a", Locale.US)
+    val parsedTime2 = parser2.parse(peminjaman.jam_selesai)
+
+    // Format the Jam Pinjam
+    val formatter2 = SimpleDateFormat("HH:mm", Locale.US)
+    val jamSelesaiFormatted = formatter2.format(parsedTime2)
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable() {
-                navController.navigate(
-                    "detailpeminjaman?peminjaman=kontol"
-                )
-
-                navController.navigate(Screen.ScreenDetailPeminjaman.route) {
+            .clickable {
+                navController.navigate(Screen.ScreenDetailPeminjaman.passPeminjamans(peminjaman)) {
                     popUpTo(Screen.ScreenDetailPeminjaman.route) {
                         inclusive = true
                     }
@@ -62,19 +75,19 @@ fun Cards(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = peminjaman.ruangan,
+                    text = peminjaman.kodeRuang,
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.secondary,
                 )
             }
             Text(
-                text = peminjaman.tanggal,
+                text = peminjaman.tanggalPinjam,
                 style = MaterialTheme.typography.labelSmall,
                 color = Color(0xFF64748B),
             )
             Text(
-                text = peminjaman.jam_masuk,
+                text = "${jamPinjamFormatted} - ${jamSelesaiFormatted}",
                 style = MaterialTheme.typography.labelSmall,
                 color = Color(0xFF64748B),
             )
@@ -98,7 +111,7 @@ fun DetailCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = false){},
+            .clickable(enabled = false) {},
         colors = CardDefaults.cardColors(containerColor = Color.White),
         border = BorderStroke(color = Color(0xFFE2E8F0), width = 1.dp)
     ) {
@@ -117,7 +130,7 @@ fun DetailCard(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = peminjaman.ruangan,
+                    text = peminjaman.kodeRuang,
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.secondary,
@@ -129,17 +142,12 @@ fun DetailCard(
                 color = Color(0xFF64748B),
             )
             Text(
-                text = peminjaman.lembaga,
+                text = peminjaman.noTelp,
                 style = MaterialTheme.typography.labelSmall,
                 color = Color(0xFF64748B),
             )
             Text(
-                text = peminjaman.no_telp,
-                style = MaterialTheme.typography.labelSmall,
-                color = Color(0xFF64748B),
-            )
-            Text(
-                text = peminjaman.tanggal,
+                text = peminjaman.tanggalPinjam,
                 style = MaterialTheme.typography.labelSmall,
                 color = Color(0xFF64748B),
             )
