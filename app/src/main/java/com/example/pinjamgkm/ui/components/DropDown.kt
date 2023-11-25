@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.DropdownMenu
@@ -28,8 +29,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,18 +47,25 @@ val all = peminjamanList.map {it.nama}
 val dropDownOptions = mutableStateOf(all)
 val textFieldValue = mutableStateOf(TextFieldValue())
 val dropDownExpanded = mutableStateOf(false)
-fun onDropdownDismissRequest() {
-    dropDownExpanded.value = false
-}
-
-fun onValueChanged(value: TextFieldValue) {
-    dropDownExpanded.value = true
-    textFieldValue.value = value
-    dropDownOptions.value = all.filter { it.startsWith(value.text) && it != value.text }.take(3)
-}
 
 @Composable
-fun DropDown() {
+fun DropDown(onNameEntered: (String) -> Unit) {
+    fun onDropdownDismissRequest() {
+        dropDownExpanded.value = false
+    }
+
+    fun onValueChanged(value: TextFieldValue) {
+        dropDownExpanded.value = true
+        textFieldValue.value = value
+        dropDownOptions.value = all
+            .filter { it.toLowerCase().startsWith(value.text.toLowerCase()) && it != value.text }
+            .distinct()
+            .take(3)
+
+        // Invoke the callback with the entered name
+        onNameEntered(value.text)
+    }
+
     TextFieldWithDropdown(
         value = textFieldValue.value,
         setValue = ::onValueChanged,
@@ -79,7 +90,11 @@ fun TextFieldWithDropdown(
         var expanded by remember { mutableStateOf(dropDownExpanded) }
 
         OutlinedTextField(
-            colors =  OutlinedTextFieldDefaults.colors(Color.Black),
+            singleLine = true,
+            colors =  OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+            ),
             placeholder = {
                 Text(
                     text = "Cari Mahasiswa",
@@ -134,13 +149,5 @@ fun TextFieldWithDropdown(
                 })
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TitlePreview() {
-    PinjamgkmTheme {
-        DropDown()
     }
 }

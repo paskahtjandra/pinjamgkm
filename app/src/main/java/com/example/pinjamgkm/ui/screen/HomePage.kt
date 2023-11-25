@@ -52,7 +52,10 @@ fun HomePage(navController: NavController) {
 
         var activeButton by remember { mutableStateOf(0) }
         PinjamGKM()
-        DropDown()
+        DropDown { enteredName ->
+            // Filter the items based on the entered name
+            lazyColumnItems = peminjamanList.filter { it.nama.contains(enteredName, ignoreCase = true) }
+        }
         val filters = listOf("Hari ini", "Besok", "Belum Dipinjam", "Dalam Peminjaman")
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(filters.size) { index ->
