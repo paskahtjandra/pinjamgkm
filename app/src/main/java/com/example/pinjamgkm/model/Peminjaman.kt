@@ -1,7 +1,7 @@
 package com.example.pinjamgkm.model
 
 data class Peminjaman(
-    val id: String,
+    val id: Int,
     val nama: String,
     val nim: String,
     val noTelp: String,
@@ -14,4 +14,16 @@ data class Peminjaman(
     val jam_pinjam: String,
     val jam_selesai: String,
     val status: String,
+)
+
+data class StatusRequest(
+    val status: String,
+)
+
+data class DefaultSuccessPeminjamanResponse(
+    val message: String,
+)
+
+data class BackendResponsePeminjaman(
+    val peminjamans: List<Peminjaman>
 )

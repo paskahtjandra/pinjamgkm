@@ -56,7 +56,27 @@ import com.example.pinjamgkm.ui.components.TimeCard
 import com.example.pinjamgkm.ui.peminjamanList
 import com.google.gson.Gson
 import java.net.URLDecoder
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Locale
 
+fun parseTime(timeString: String): String {
+    val formats = arrayOf("hh:mm:ss a", "HH:mm:ss", "hh:mm:ss", "HH:mm")
+
+    for (format in formats) {
+        try {
+            val parser = SimpleDateFormat(format, Locale.US)
+            val parsedTime = parser.parse(timeString)
+            val formatter = SimpleDateFormat("HH:mm", Locale.US)
+            return formatter.format(parsedTime!!)
+        } catch (e: ParseException) {
+            // If parsing fails, try the next format
+        }
+    }
+
+    // Return the original string if none of the formats match
+    return timeString
+}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,6 +90,9 @@ fun DetailPeminjaman(navController: NavController) {
     }
     val decodedPeminjamansJson = URLDecoder.decode(encodedPeminjamansJson, "UTF-8")
     val peminjamans = gson.fromJson(decodedPeminjamansJson, Peminjaman::class.java)
+
+    val jamPinjamFormatted = parseTime(peminjamans.jam_pinjam)
+    val jamSelesaiFormatted = parseTime(peminjamans.jam_selesai)
 
     if (!view.isInEditMode) {
         SideEffect {
@@ -145,8 +168,8 @@ fun DetailPeminjaman(navController: NavController) {
             var kegiatan by remember { mutableStateOf("") }
             DetailCard(navController, peminjamans)
             TimeCard(
-                jamPinjam = peminjamans.jam_pinjam,
-                jamSelesai = peminjamans.jam_selesai,
+                jamPinjam = jamPinjamFormatted,
+                jamSelesai = jamSelesaiFormatted,
             )
             Material3OutlinedTextField(
                 label = "Keterangan Kegiatan",

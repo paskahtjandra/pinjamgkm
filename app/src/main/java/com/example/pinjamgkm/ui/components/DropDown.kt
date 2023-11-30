@@ -23,6 +23,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,26 +39,33 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pinjamgkm.model.Peminjaman
+import com.example.pinjamgkm.ui.PeminjamanViewModel
 import com.example.pinjamgkm.ui.components.PinjamGKM
 import com.example.pinjamgkm.ui.peminjamanList
 import com.example.pinjamgkm.ui.theme.PinjamgkmTheme
 
-val all = peminjamanList.map {it.nama}
-
-val dropDownOptions = mutableStateOf(all)
-val textFieldValue = mutableStateOf(TextFieldValue())
-val dropDownExpanded = mutableStateOf(false)
-
 @Composable
 fun DropDown(onNameEntered: (String) -> Unit) {
+    val peminjamanViewModel: PeminjamanViewModel = viewModel()
+    val listPeminjamans by peminjamanViewModel.peminjaman.observeAsState(initial = emptyList())
+    val listPeminjaman = listPeminjamans.filter { it.namaGedung == "Gedung Kemahasiswaan" }
+    var all = listPeminjaman
+        .map {it.nama}
+
+    var dropDownOptions by remember { mutableStateOf(all) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+    var dropDownExpanded by remember { mutableStateOf(false) }
     fun onDropdownDismissRequest() {
-        dropDownExpanded.value = false
+        dropDownExpanded = false
     }
 
     fun onValueChanged(value: TextFieldValue) {
-        dropDownExpanded.value = true
-        textFieldValue.value = value
-        dropDownOptions.value = all
+        dropDownExpanded = true
+        textFieldValue = value
+        dropDownOptions = all
             .filter { it.toLowerCase().startsWith(value.text.toLowerCase()) && it != value.text }
             .distinct()
             .take(3)
@@ -67,11 +75,11 @@ fun DropDown(onNameEntered: (String) -> Unit) {
     }
 
     TextFieldWithDropdown(
-        value = textFieldValue.value,
+        value = textFieldValue,
         setValue = ::onValueChanged,
         onDismissRequest = ::onDropdownDismissRequest,
-        dropDownExpanded = dropDownExpanded.value,
-        list = dropDownOptions.value,
+        dropDownExpanded = dropDownExpanded,
+        list = dropDownOptions,
         label = "Nama"
     )
 }

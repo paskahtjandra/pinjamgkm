@@ -24,29 +24,35 @@ import androidx.navigation.NavController
 import com.example.pinjamgkm.Screen
 import com.example.pinjamgkm.model.Peminjaman
 import com.example.pinjamgkm.ui.peminjamanList
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
+
+fun parseTime(timeString: String): String {
+    val formats = arrayOf("hh:mm:ss a", "HH:mm:ss", "hh:mm:ss", "HH:mm")
+
+    for (format in formats) {
+        try {
+            val parser = SimpleDateFormat(format, Locale.US)
+            val parsedTime = parser.parse(timeString)
+            val formatter = SimpleDateFormat("HH:mm", Locale.US)
+            return formatter.format(parsedTime!!)
+        } catch (e: ParseException) {
+            // If parsing fails, try the next format
+        }
+    }
+
+    // Return the original string if none of the formats match
+    return timeString
+}
 
 @Composable
 fun Cards(
     navController: NavController,
     peminjaman: Peminjaman
 ) {
-// Change The Jam Pinjam Format
-    val parser = SimpleDateFormat("hh:mm:ss a", Locale.US)
-    val parsedTime = parser.parse(peminjaman.jam_pinjam)
-
-    // Format the Jam Pinjam
-    val formatter = SimpleDateFormat("HH:mm", Locale.US)
-    val jamPinjamFormatted = formatter.format(parsedTime)
-
-    // Change The Jam Pinjam Format
-    val parser2 = SimpleDateFormat("hh:mm:ss a", Locale.US)
-    val parsedTime2 = parser2.parse(peminjaman.jam_selesai)
-
-    // Format the Jam Pinjam
-    val formatter2 = SimpleDateFormat("HH:mm", Locale.US)
-    val jamSelesaiFormatted = formatter2.format(parsedTime2)
+    val jamPinjamFormatted = parseTime(peminjaman.jam_pinjam)
+    val jamSelesaiFormatted = parseTime(peminjaman.jam_selesai)
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -93,11 +99,17 @@ fun Cards(
             )
 
             Spacer(modifier = Modifier.height(8.dp))
+            val textColor = when (peminjaman.status) {
+                "Dalam Peminjaman" -> Color(0xFFF1C411)
+                "Sudah Selesai" -> Color(0XFF2CB44D)
+                "Belum Dipinjam" -> Color.Black
+                else -> MaterialTheme.colorScheme.secondary // Default color
+            }
             Text(
                 text = peminjaman.status,
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.secondary,
+                color = textColor,
             )
         }
     }
@@ -152,11 +164,18 @@ fun DetailCard(
                 color = Color(0xFF64748B),
             )
             Spacer(modifier = Modifier.height(8.dp))
+
+            val textColor = when (peminjaman.status) {
+                "Dalam Peminjaman" -> Color(0xFFF1C411)
+                "Sudah Selesai" -> Color(0XFF2CB44D)
+                "Belum Dipinjam" -> Color.Black
+                else -> MaterialTheme.colorScheme.secondary // Default color
+            }
             Text(
                 text = peminjaman.status,
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.secondary,
+                color = textColor,
             )
         }
     }

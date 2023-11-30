@@ -35,6 +35,8 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -61,16 +63,26 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val snackbarHostState = remember { SnackbarHostState() }
             PinjamgkmTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = Color(0xFFFFFAF6)
                 ) {
-                    Navigation()
+                    Navigation(snackbarHostState)
+
+                    Scaffold(
+                        snackbarHost = {
+                            SnackbarHost(hostState = snackbarHostState)
+                        },
+                    ) {
+                        Navigation(snackbarHostState)
+                    }
                 }
             }
         }
@@ -83,17 +95,3 @@ val customShape = RoundedCornerShape(
     bottomStart = 30.dp, // Bottom left radius
     bottomEnd = 30.dp  // Bottom right radius
 )
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PinjamgkmTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = Color(0xFFFFF1E6)
-        ) {
-            Navigation()
-        }
-    }
-}

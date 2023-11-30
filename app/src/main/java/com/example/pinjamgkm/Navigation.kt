@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -58,11 +59,11 @@ import com.example.pinjamgkm.ui.screen.DetailPeminjaman
 import com.example.pinjamgkm.ui.screen.HomePage
 
 @Composable
-fun Navigation() {
+fun Navigation(snackbarHostState: SnackbarHostState) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.ScreenHomePage.route) {
         composable(route = Screen.ScreenHomePage.route) {
-            HomePage(navController = navController)
+            HomePage(navController = navController, snackbarHostState = snackbarHostState)
         }
         composable(route = Screen.ScreenDetailPeminjaman.route,) {
             DetailPeminjaman(navController = navController)

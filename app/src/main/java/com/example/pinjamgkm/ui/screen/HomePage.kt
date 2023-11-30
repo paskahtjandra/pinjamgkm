@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,11 +22,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.pinjamgkm.api.RetrofitInstance
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.ViewModelProvider
+import com.example.pinjamgkm.model.Peminjaman
+import com.example.pinjamgkm.ui.PeminjamanViewModel
+import com.example.pinjamgkm.ui.PeminjamanViewModelFactory
 import com.example.pinjamgkm.ui.components.Cards
 import com.example.pinjamgkm.ui.components.Filters
 import com.example.pinjamgkm.ui.components.PinjamGKM
-import com.example.pinjamgkm.ui.peminjamanList
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -35,8 +43,12 @@ import java.util.Locale
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(navController: NavController) {
-    var lazyColumnItems by remember { mutableStateOf(peminjamanList) }
+fun HomePage(navController: NavController, snackbarHostState: SnackbarHostState) {
+    val registerViewModelFactory =
+        PeminjamanViewModelFactory( snackbarHostState) as ViewModelProvider.Factory
+    val peminjamanViewModel: PeminjamanViewModel = viewModel(factory = registerViewModelFactory)
+    val listPeminjamans by peminjamanViewModel.peminjaman.observeAsState(initial = emptyList())
+    var lazyColumnItems by remember { mutableStateOf(listPeminjamans) }
     val enteredName by remember { mutableStateOf("") }
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -45,6 +57,13 @@ fun HomePage(navController: NavController) {
             window.statusBarColor = Color(0xFFFFFAF6).toArgb()
         }
     }
+
+    LaunchedEffect(Unit) {
+        peminjamanViewModel.fetchPeminjaman()
+    }
+
+    lazyColumnItems = listPeminjamans.filter {it.namaGedung == "Gedung Kemahasiswaan"}
+
     Column(
         modifier = Modifier
             .padding(top = 12.dp, start = 12.dp, end = 12.dp),
@@ -54,9 +73,9 @@ fun HomePage(navController: NavController) {
         PinjamGKM()
         DropDown { enteredName ->
             // Filter the items based on the entered name
-            lazyColumnItems = peminjamanList.filter { it.nama.contains(enteredName, ignoreCase = true) }
+            lazyColumnItems = listPeminjamans.filter { it.nama.contains(enteredName, ignoreCase = true) && it.namaGedung == "Gedung Kemahasiswaan"}
         }
-        val filters = listOf("Hari ini", "Besok", "Belum Dipinjam", "Dalam Peminjaman")
+        val filters = listOf("Semua","Hari ini", "Besok", "Belum Dipinjam", "Dalam Peminjaman", "Sudah Selesai")
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(filters.size) { index ->
                 Filters(
@@ -68,29 +87,34 @@ fun HomePage(navController: NavController) {
                     lazyColumnItems = when (filters[index]) {
                         "Belum Dipinjam" -> {
                             // Filter the items based on the selected filter
-                            peminjamanList.filter { it.status == "Belum Dipinjam" }
+                            listPeminjamans.filter { it.status == "Belum Dipinjam" }
                         }
 
                         "Dalam Peminjaman" -> {
                             // Filter the items based on the selected filter
-                            peminjamanList.filter { it.status == "Dalam Peminjaman" }
+                            listPeminjamans.filter { it.status == "Dalam Peminjaman" }
+                        }
+
+                        "Sudah Selesai" -> {
+                            // Filter the items based on the selected filter
+                            listPeminjamans.filter { it.status == "Sudah Selesai" }
                         }
 
                         "Hari ini" -> {
                             // Filter the items based on the current date
                             val currentDate = getCurrentDate()
-                            peminjamanList.filter { it.tanggalPinjam == currentDate }
+                            listPeminjamans.filter { it.tanggalPinjam == currentDate }
                         }
 
                         "Besok" -> {
                             // Filter the items based on tomorrow's date
                             val tomorrowDate = getTomorrowDate()
-                            peminjamanList.filter { it.tanggalPinjam == tomorrowDate }
+                            listPeminjamans.filter { it.tanggalPinjam == tomorrowDate }
                         }
 
                         else -> {
                             // Handle other filters or default case
-                            peminjamanList
+                            listPeminjamans.filter {it.namaGedung == "Gedung Kemahasiswaan"}
                         }
                     }
                 }

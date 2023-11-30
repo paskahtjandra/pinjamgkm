@@ -4,7 +4,7 @@ import com.example.pinjamgkm.model.Peminjaman
 
 val peminjamanList = listOf(
     Peminjaman(
-        id = "1",
+        id = 1,
         nama = "Gilang Putro Pamungkas",
         nim = "225150307111010",
         noTelp = "085710190481",
@@ -19,7 +19,7 @@ val peminjamanList = listOf(
         status = "Belum Dipinjam"
     ),
     Peminjaman(
-        id = "2",
+        id = 2,
         nama = "Gilang Putro Pamungkas",
         nim = "225150307111010",
         noTelp = "085710190481",
@@ -34,7 +34,7 @@ val peminjamanList = listOf(
         status = "Dalam Peminjaman"
     ),
     Peminjaman(
-        id = "3",
+        id = 3,
         nama = "Natanael Isaac",
         nim = "225150401111036",
         noTelp = "087720993152",
@@ -49,7 +49,7 @@ val peminjamanList = listOf(
         status = "Belum Dipinjam"
     ),
     Peminjaman(
-        id = "4",
+        id = 4,
         nama = "Mikhael Ryan Toar",
         nim = "215150300111006",
         noTelp = "085156862403",
@@ -64,7 +64,7 @@ val peminjamanList = listOf(
         status = "Dalam Peminjaman"
     ),
     Peminjaman(
-        id = "5",
+        id = 5,
         nama = "Ghania Tanziela",
         nim = "215150700111054",
         noTelp = "081227387764",
@@ -76,7 +76,7 @@ val peminjamanList = listOf(
         tanggalSelesai = "11/12/2023",
         jam_pinjam = "10:00:00 AM",
         jam_selesai = "12:00:00 PM",
-        status = "Belum Dipinjam"
+        status = "Sudah Selesai"
     )
 )
 
