@@ -17,10 +17,10 @@ interface ApiService {
     @POST("api/v1/peminjaman/update/{peminjamanId}")
     suspend fun updateStatus(@Body requestBody: StatusRequest, @Path("peminjamanId") peminjamanId: Int): Response<DefaultSuccessPeminjamanResponse>
 
-    @POST("lockroom/{idRuangan}")
+    @POST("api/v1/peminjaman/lockroom/{idRuangan}")
     suspend fun lockRoom(@Path("idRuangan") idRuangan: Int): Response<DefaultSuccessPeminjamanResponse>
 
-    @POST("unlockroom/{idRuangan}")
+    @POST("api/v1/peminjaman/unlockroom/{idRuangan}")
     suspend fun unlockRoom(@Path("idRuangan") idRuangan: Int): Response<DefaultSuccessPeminjamanResponse>
 
 }

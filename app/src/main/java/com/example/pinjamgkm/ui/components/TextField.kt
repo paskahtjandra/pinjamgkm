@@ -29,6 +29,7 @@ fun Material3OutlinedTextField(
             .offset(y = 5.dp),
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.Medium,
+        color = Color.Black
     )
 
     OutlinedTextField(

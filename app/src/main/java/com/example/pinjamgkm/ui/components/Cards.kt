@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.pinjamgkm.Screen
 import com.example.pinjamgkm.model.Peminjaman
-import com.example.pinjamgkm.ui.peminjamanList
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale

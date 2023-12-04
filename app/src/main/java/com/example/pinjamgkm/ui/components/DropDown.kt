@@ -44,7 +44,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pinjamgkm.model.Peminjaman
 import com.example.pinjamgkm.ui.PeminjamanViewModel
 import com.example.pinjamgkm.ui.components.PinjamGKM
-import com.example.pinjamgkm.ui.peminjamanList
 import com.example.pinjamgkm.ui.theme.PinjamgkmTheme
 
 @Composable
@@ -52,6 +51,7 @@ fun DropDown(onNameEntered: (String) -> Unit) {
     val peminjamanViewModel: PeminjamanViewModel = viewModel()
     val listPeminjamans by peminjamanViewModel.peminjaman.observeAsState(initial = emptyList())
     val listPeminjaman = listPeminjamans.filter { it.namaGedung == "Gedung Kemahasiswaan" }
+
     var all = listPeminjaman
         .map {it.nama}
 

@@ -74,8 +74,6 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color(0xFFFFFAF6)
                 ) {
-                    Navigation(snackbarHostState)
-
                     Scaffold(
                         snackbarHost = {
                             SnackbarHost(hostState = snackbarHostState)

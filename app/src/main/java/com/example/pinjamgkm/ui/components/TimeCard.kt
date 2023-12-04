@@ -32,21 +32,6 @@ fun TimeCard(
     jamPinjam: String,
     jamSelesai: String,
 ) {
-//    // Change The Jam Pinjam Format
-//    val parser = SimpleDateFormat("hh:mm:ss a", Locale.US)
-//    val parsedTime = parser.parse(jamPinjam)
-//
-//    // Format the Jam Pinjam
-//    val formatter = SimpleDateFormat("HH:mm", Locale.US)
-//    val jamPinjamFormatted = formatter.format(parsedTime)
-//
-//    // Change The Jam Pinjam Format
-//    val parser2 = SimpleDateFormat("hh:mm:ss a", Locale.US)
-//    val parsedTime2 = parser2.parse(jamSelesai)
-//
-//    // Format the Jam Pinjam
-//    val formatter2 = SimpleDateFormat("HH:mm", Locale.US)
-//    val jamSelesaiFormatted = formatter2.format(parsedTime2)
 
     Card(
         modifier = Modifier

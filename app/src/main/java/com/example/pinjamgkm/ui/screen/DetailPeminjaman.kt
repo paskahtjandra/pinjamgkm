@@ -26,12 +26,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -45,15 +47,19 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.pinjamgkm.ARGUMENT_PEMINJAMANS
 import com.example.pinjamgkm.Screen
 import com.example.pinjamgkm.customShape
 import com.example.pinjamgkm.model.Peminjaman
+import com.example.pinjamgkm.model.StatusRequest
+import com.example.pinjamgkm.ui.PeminjamanViewModel
+import com.example.pinjamgkm.ui.PeminjamanViewModelFactory
 import com.example.pinjamgkm.ui.components.DetailCard
 import com.example.pinjamgkm.ui.components.TimeCard
-import com.example.pinjamgkm.ui.peminjamanList
 import com.google.gson.Gson
 import java.net.URLDecoder
 import java.text.ParseException
@@ -81,12 +87,17 @@ fun parseTime(timeString: String): String {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailPeminjaman(navController: NavController) {
+fun DetailPeminjaman(navController: NavController, snackbarHostState: SnackbarHostState) {
     val view = LocalView.current
+    val registerViewModelFactory =
+        PeminjamanViewModelFactory(snackbarHostState) as ViewModelProvider.Factory
+    val peminjamanViewModel: PeminjamanViewModel = viewModel(factory = registerViewModelFactory)
+    val listPeminjamans by peminjamanViewModel.peminjaman.observeAsState(initial = emptyList())
 
     val gson = Gson()
     val encodedPeminjamansJson = rememberSaveable {
-        navController.currentBackStackEntry?.arguments?.getString(ARGUMENT_PEMINJAMANS.PEMINJAMANS_JSON) ?: ""
+        navController.currentBackStackEntry?.arguments?.getString(ARGUMENT_PEMINJAMANS.PEMINJAMANS_JSON)
+            ?: ""
     }
     val decodedPeminjamansJson = URLDecoder.decode(encodedPeminjamansJson, "UTF-8")
     val peminjamans = gson.fromJson(decodedPeminjamansJson, Peminjaman::class.java)
@@ -110,9 +121,7 @@ fun DetailPeminjaman(navController: NavController) {
                     .clip(customShape)
                     .background(MaterialTheme.colorScheme.secondary)
             ) {
-                TopAppBar(
-                    modifier = Modifier
-                        .align(Alignment.Center),
+                TopAppBar(modifier = Modifier.align(Alignment.Center),
                     colors = TopAppBarDefaults.smallTopAppBarColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
                         titleContentColor = MaterialTheme.colorScheme.primary,
@@ -120,8 +129,7 @@ fun DetailPeminjaman(navController: NavController) {
                     navigationIcon = {
 
                         IconButton(
-                            modifier = Modifier
-                                .padding(top = 15.dp, start = 10.dp),
+                            modifier = Modifier.padding(top = 15.dp, start = 10.dp),
                             onClick = {
                                 navController.navigate(Screen.ScreenHomePage.route) {
                                     popUpTo(Screen.ScreenHomePage.route) {
@@ -133,8 +141,7 @@ fun DetailPeminjaman(navController: NavController) {
 
                             ) {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = null
+                                imageVector = Icons.Default.ArrowBack, contentDescription = null
                             )
                         }
                     },
@@ -154,15 +161,15 @@ fun DetailPeminjaman(navController: NavController) {
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
-                    }
-                )
+                    })
             }
         },
 
         ) {
         Column(
-            modifier = Modifier
-                .padding(top = it.calculateTopPadding() + 12.dp, start = 12.dp, end = 12.dp),
+            modifier = Modifier.padding(
+                top = it.calculateTopPadding() + 12.dp, start = 12.dp, end = 12.dp
+            ),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             var kegiatan by remember { mutableStateOf("") }
@@ -174,48 +181,94 @@ fun DetailPeminjaman(navController: NavController) {
             Material3OutlinedTextField(
                 label = "Keterangan Kegiatan",
                 value = peminjamans.keperluan,
-                onValueChange = {  }
-            )
-            Row(
-                modifier = Modifier
-                    .padding(top = 4.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-                ){
-                Button(
-                    onClick = { },
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                onValueChange = { })
+            if (peminjamans.kodeRuang.contains("4.")) {
+                Row(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        text = " Buka Ruangan ",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    Button(
+                        onClick = {
+                            var ruang = 1
+                            if (peminjamans.kodeRuang.contains(".1")) {
+                                ruang = 1
+                            } else ruang = 2
+                            peminjamanViewModel.unlockRoom(ruang) {
+                                navController.navigate(Screen.ScreenHomePage.route) {
+                                    popUpTo(Screen.ScreenHomePage.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                    ) {
+                        Text(
+                            text = " Buka Ruangan ",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                    Button(
+                        onClick = {
+                            var ruang = 1
+                            if (peminjamans.kodeRuang.contains(".1")) {
+                                ruang = 1
+                            } else ruang = 2
+                            peminjamanViewModel.lockRoom(ruang) {
+                                navController.navigate(Screen.ScreenHomePage.route) {
+                                    popUpTo(Screen.ScreenHomePage.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                    ) {
+                        Text(
+                            text = " Kunci Ruangan ",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
+            }
+            if(peminjamans.status != "Sudah Selesai") {
                 Button(
-                    onClick = { },
+                    onClick = {
+                        var updatedStatus = ""
+                        if (peminjamans.status == "Belum Dipinjam") {
+                            updatedStatus = "Dalam Peminjaman"
+                        } else if (peminjamans.status == "Dalam Peminjaman") {
+                            updatedStatus = "Sudah Selesai"
+                        }
+                        val statusRequest = StatusRequest(
+                            status = updatedStatus
+                        )
+                        peminjamanViewModel.updateStatusPeminjaman(
+                            statusRequest, peminjamans.id + 1
+                        ) {
+                            navController.navigate(Screen.ScreenHomePage.route) {
+                                popUpTo(Screen.ScreenHomePage.route) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+
+                    },
+                    modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
                 ) {
                     Text(
-                        text = " Kunci Ruangan ",
+                        text = "Update Status",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
-            }
-            Button(
-                onClick = { },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium,
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
-            ) {
-                Text(
-                    text = "Update Status",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
             }
         }
     }

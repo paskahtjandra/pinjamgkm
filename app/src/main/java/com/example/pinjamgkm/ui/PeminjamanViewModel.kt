@@ -34,16 +34,37 @@ class PeminjamanViewModel(
         }
     }
 
-    fun updateStatusPeminjaman(statusRequest: StatusRequest, peminjamanId: Int){
+    fun updateStatusPeminjaman(statusRequest: StatusRequest, peminjamanId: Int, onFinish: () -> Unit){
         viewModelScope.launch {
-            snackbarHostState.showSnackbar("Loading")
+            snackbarHostState.showSnackbar("Sedang Mengupdate Status")
             val response = generalRepository.updateStatus(statusRequest,peminjamanId)
             if (response.isSuccessful) {
+                onFinish()
                 snackbarHostState.showSnackbar("Sukses Mengupdate Data")
             }
         }
     }
+    fun lockRoom(ruanganId: Int, onFinish: () -> Unit){
+        viewModelScope.launch {
+            snackbarHostState.showSnackbar("Sedang Mengunci Ruangan")
+            val response = generalRepository.lockRoom(ruanganId)
+            if (response.isSuccessful) {
+                onFinish()
+                snackbarHostState.showSnackbar("Sukses Mengunci Ruangan")
+            }
+        }
+    }
 
+    fun unlockRoom(ruanganId: Int, onFinish: () -> Unit){
+        viewModelScope.launch {
+            snackbarHostState.showSnackbar("Sedang Membuka Ruangan")
+            val response = generalRepository.unlockRoom(ruanganId)
+            if (response.isSuccessful) {
+                onFinish()
+                snackbarHostState.showSnackbar("Sukses Membuka Ruangan")
+            }
+        }
+    }
 }
 
 class PeminjamanViewModelFactory(
