@@ -3,16 +3,21 @@ package com.example.pinjamgkm
 import Material3OutlinedTextField
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.window.SplashScreen
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,33 +58,85 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.pinjamgkm.ui.theme.PinjamgkmTheme
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.navigation.Navigation
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
+
+    @Composable
+    fun SplashScreen(
+        onSplashScreenFinished: () -> Unit
+    ) {
+        val imagePainter: Painter = painterResource(id = R.drawable.logo)
+
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Color(0xFFFFFAF6)
+        ) {
+            Row(
+                modifier = Modifier.padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Image(
+                    painter = imagePainter,
+                    contentDescription = null,
+                    modifier = Modifier.size(80.dp).padding(start = 7.dp)
+                )
+                Spacer(modifier = Modifier.width(20.dp))
+                Column() {
+                    Text(
+                        text = "Pinjam GKM",
+                        style = TextStyle(fontSize= 40.sp),
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF002647),
+                    )
+                }
+            }
+            // Simulate a delay for the splash screen
+            LaunchedEffect(Unit) {
+                delay(1000)
+                onSplashScreenFinished.invoke()
+            }
+        }
+    }
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val snackbarHostState = remember { SnackbarHostState() }
-            PinjamgkmTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = Color(0xFFFFFAF6)
-                ) {
-                    Scaffold(
-                        snackbarHost = {
-                            SnackbarHost(hostState = snackbarHostState)
-                        },
+            var splashScreenVisible by remember { mutableStateOf(true) }
+
+            if (splashScreenVisible) {
+                SplashScreen {
+                    splashScreenVisible = false
+                }
+            } else {
+                PinjamgkmTheme {
+                    // A surface container using the 'background' color from the theme
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = Color(0xFFFFFAF6)
                     ) {
-                        Navigation(snackbarHostState)
+                        Scaffold(
+                            snackbarHost = {
+                                SnackbarHost(hostState = snackbarHostState)
+                            },
+                        ) {
+                            Navigation(snackbarHostState)
+                        }
                     }
                 }
             }

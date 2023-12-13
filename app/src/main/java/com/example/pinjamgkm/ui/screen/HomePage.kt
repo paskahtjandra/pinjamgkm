@@ -62,7 +62,7 @@ fun HomePage(navController: NavController, snackbarHostState: SnackbarHostState)
         peminjamanViewModel.fetchPeminjaman()
     }
 
-    lazyColumnItems = listPeminjamans.filter {it.namaGedung == "Gedung Kemahasiswaan"}
+    lazyColumnItems = listPeminjamans.filter {it.namaGedung == "Gedung Kemahasiswaan" && it.kodeRuang.contains(".")}
 
     Column(
         modifier = Modifier
@@ -124,8 +124,8 @@ fun HomePage(navController: NavController, snackbarHostState: SnackbarHostState)
             Modifier.padding(top = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(lazyColumnItems.size) { index ->
-                Cards(navController, lazyColumnItems[index])
+            items(lazyColumnItems.sortedBy { it.tanggalPinjam }.size) { index ->
+                Cards(navController, lazyColumnItems.sortedByDescending { it.tanggalPinjam }[index])
             }
         }
     }

@@ -27,6 +27,16 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+fun extractShortCode(kodeRuang: String): String {
+    val regex = Regex("""[0-9]+\.[0-9]+""")
+    val matchResult = regex.find(kodeRuang)
+    return matchResult?.value ?: run {
+        // If the regex doesn't match, try to find a numeric substring in the string
+        val numericSubstring = kodeRuang.filter { it.isDigit() }
+        return if (numericSubstring.isNotEmpty()) numericSubstring else ""
+    }
+}
+
 fun parseTime(timeString: String): String {
     val formats = arrayOf("hh:mm:ss a", "HH:mm:ss", "hh:mm:ss", "HH:mm")
 
@@ -52,6 +62,7 @@ fun Cards(
 ) {
     val jamPinjamFormatted = parseTime(peminjaman.jam_pinjam)
     val jamSelesaiFormatted = parseTime(peminjaman.jam_selesai)
+    val shortCode = extractShortCode(peminjaman.kodeRuang)
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -80,7 +91,7 @@ fun Cards(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = peminjaman.kodeRuang,
+                    text = shortCode,
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.secondary,
