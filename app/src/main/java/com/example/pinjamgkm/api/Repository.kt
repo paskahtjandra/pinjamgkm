@@ -9,6 +9,7 @@ import retrofit2.http.Path
 
 class Repository() {
     suspend fun getPeminjamans() = apiService.getPeminjamanList()
+    suspend fun getRuangans() = apiService.getRuanganList()
     suspend fun updateStatus(requestBody: StatusRequest, peminjamanId: Int) = apiService.updateStatus(requestBody, peminjamanId)
     suspend fun lockRoom(idRuangan: Int) = apiService.lockRoom(idRuangan)
     suspend fun unlockRoom(idRuangan: Int) = apiService.unlockRoom(idRuangan)

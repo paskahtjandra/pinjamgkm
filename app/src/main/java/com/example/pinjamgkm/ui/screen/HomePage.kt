@@ -87,17 +87,17 @@ fun HomePage(navController: NavController, snackbarHostState: SnackbarHostState)
                     lazyColumnItems = when (filters[index]) {
                         "Belum Dipinjam" -> {
                             // Filter the items based on the selected filter
-                            listPeminjamans.filter { it.status == "Belum Dipinjam" }
+                            listPeminjamans.filter { it.status == "Belum Dipinjam" && it.namaGedung == "Gedung Kemahasiswaan" && it.kodeRuang.contains(".")}
                         }
 
                         "Dalam Peminjaman" -> {
                             // Filter the items based on the selected filter
-                            listPeminjamans.filter { it.status == "Dalam Peminjaman" }
+                            listPeminjamans.filter { it.status == "Dalam Peminjaman" && it.namaGedung == "Gedung Kemahasiswaan" && it.kodeRuang.contains(".") }
                         }
 
                         "Sudah Selesai" -> {
                             // Filter the items based on the selected filter
-                            listPeminjamans.filter { it.status == "Sudah Selesai" }
+                            listPeminjamans.filter { it.status == "Sudah Selesai" && it.namaGedung == "Gedung Kemahasiswaan" && it.kodeRuang.contains(".") }
                         }
 
                         "Hari ini" -> {
@@ -124,8 +124,8 @@ fun HomePage(navController: NavController, snackbarHostState: SnackbarHostState)
             Modifier.padding(top = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(lazyColumnItems.sortedBy { it.tanggalPinjam }.size) { index ->
-                Cards(navController, lazyColumnItems.sortedByDescending { it.tanggalPinjam }[index])
+            items(lazyColumnItems.size) { index ->
+                Cards(navController, lazyColumnItems.sortedByDescending { it.id }[index])
             }
         }
     }

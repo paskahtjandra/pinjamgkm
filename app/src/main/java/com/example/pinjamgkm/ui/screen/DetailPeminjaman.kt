@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -92,8 +93,8 @@ fun DetailPeminjaman(navController: NavController, snackbarHostState: SnackbarHo
     val registerViewModelFactory =
         PeminjamanViewModelFactory(snackbarHostState) as ViewModelProvider.Factory
     val peminjamanViewModel: PeminjamanViewModel = viewModel(factory = registerViewModelFactory)
-    val listPeminjamans by peminjamanViewModel.peminjaman.observeAsState(initial = emptyList())
-
+    val listRuangan by peminjamanViewModel.ruangan.observeAsState(initial = emptyList())
+    var ruanganinfo by remember { mutableStateOf(listRuangan) }
     val gson = Gson()
     val encodedPeminjamansJson = rememberSaveable {
         navController.currentBackStackEntry?.arguments?.getString(ARGUMENT_PEMINJAMANS.PEMINJAMANS_JSON)
@@ -105,11 +106,27 @@ fun DetailPeminjaman(navController: NavController, snackbarHostState: SnackbarHo
     val jamPinjamFormatted = parseTime(peminjamans.jam_pinjam)
     val jamSelesaiFormatted = parseTime(peminjamans.jam_selesai)
 
+
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = Color(0xFF002647).toArgb()
         }
+    }
+
+    LaunchedEffect(Unit) {
+        peminjamanViewModel.fetchRuangan()
+    }
+
+    ruanganinfo = listRuangan.filter {peminjamans.kodeRuang.contains(it.ruang)}
+    // Add a variable to track the enabled/disabled state of the "Kunci Ruangan" button
+    var isButtonKunciEnabled by remember { mutableStateOf(false) }
+    var isButtonBukaEnabled by remember { mutableStateOf(false) }
+    // Check the status of the room and update the button state
+    if (ruanganinfo.isNotEmpty() && ruanganinfo[0].status == "lock") {
+        isButtonBukaEnabled = true
+    }else if(ruanganinfo.isNotEmpty() && ruanganinfo[0].status == "unlock") {
+        isButtonKunciEnabled = true
     }
 
     Scaffold(
@@ -172,102 +189,112 @@ fun DetailPeminjaman(navController: NavController, snackbarHostState: SnackbarHo
             ),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            var kegiatan by remember { mutableStateOf("") }
-            DetailCard(navController, peminjamans)
-            TimeCard(
-                jamPinjam = jamPinjamFormatted,
-                jamSelesai = jamSelesaiFormatted,
-            )
-            Material3OutlinedTextField(
-                label = "Keterangan Kegiatan",
-                value = peminjamans.keperluan,
-                onValueChange = { })
-            if (peminjamans.kodeRuang.contains("4.")) {
-                Row(
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Button(
-                        onClick = {
-                            var ruang = 1
-                            if (peminjamans.kodeRuang.contains(".1")) {
-                                ruang = 1
-                            } else ruang = 2
-                            peminjamanViewModel.unlockRoom(ruang) {
-                                navController.navigate(Screen.ScreenHomePage.route) {
-                                    popUpTo(Screen.ScreenHomePage.route) {
-                                        inclusive = true
-                                    }
-                                }
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+                var kegiatan by remember { mutableStateOf("") }
+                DetailCard(navController, peminjamans)
+                TimeCard(
+                    jamPinjam = jamPinjamFormatted,
+                    jamSelesai = jamSelesaiFormatted,
+                )
+                Material3OutlinedTextField(
+                    label = "Keterangan Kegiatan",
+                    value = peminjamans.keperluan,
+                    onValueChange = { })
+            if (listRuangan.isNotEmpty()) {
+                if (peminjamans.kodeRuang.contains("4.")) {
+                    Row(
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            text = " Buka Ruangan ",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                        Button(
+                            onClick = {
+                                var ruang = 1
+                                if (peminjamans.kodeRuang.contains(".1")) {
+                                    ruang = 1
+                                } else ruang = 2
+                                peminjamanViewModel.unlockRoom(ruang) {
+                                    navController.navigate(Screen.ScreenHomePage.route) {
+                                        popUpTo(Screen.ScreenHomePage.route) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            },
+                            enabled = isButtonBukaEnabled,  // Disable the button if isButtonKunciEnabled is false
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                disabledContainerColor = Color(0xFF9D0000)
+                            ),
+                        ) {
+                            Text(
+                                text = " Buka Ruangan ",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                        Button(
+                            onClick = {
+                                var ruang = 1
+                                if (peminjamans.kodeRuang.contains(".1")) {
+                                    ruang = 1
+                                } else ruang = 2
+                                peminjamanViewModel.lockRoom(ruang) {
+                                    navController.navigate(Screen.ScreenHomePage.route) {
+                                        popUpTo(Screen.ScreenHomePage.route) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            },
+                            shape = MaterialTheme.shapes.medium,
+                            enabled = isButtonKunciEnabled,  // Disable the button if isButtonKunciEnabled is false
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                disabledContainerColor = Color(0xFF9D0000)
+                            ),
+                        ) {
+                            Text(
+                                text = " Kunci Ruangan ",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
+                }
+                if (peminjamans.status != "Sudah Selesai") {
                     Button(
                         onClick = {
-                            var ruang = 1
-                            if (peminjamans.kodeRuang.contains(".1")) {
-                                ruang = 1
-                            } else ruang = 2
-                            peminjamanViewModel.lockRoom(ruang) {
+                            var updatedStatus = ""
+                            if (peminjamans.status == "Belum Dipinjam") {
+                                updatedStatus = "Dalam Peminjaman"
+                            } else if (peminjamans.status == "Dalam Peminjaman") {
+                                updatedStatus = "Sudah Selesai"
+                            }
+                            val statusRequest = StatusRequest(
+                                status = updatedStatus
+                            )
+                            peminjamanViewModel.updateStatusPeminjaman(
+                                statusRequest, peminjamans.id + 1
+                            ) {
                                 navController.navigate(Screen.ScreenHomePage.route) {
                                     popUpTo(Screen.ScreenHomePage.route) {
                                         inclusive = true
                                     }
                                 }
                             }
+
                         },
+                        modifier = Modifier.fillMaxWidth(),
                         shape = MaterialTheme.shapes.medium,
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
                     ) {
                         Text(
-                            text = " Kunci Ruangan ",
+                            text = "Update Status",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
-                }
-            }
-            if(peminjamans.status != "Sudah Selesai") {
-                Button(
-                    onClick = {
-                        var updatedStatus = ""
-                        if (peminjamans.status == "Belum Dipinjam") {
-                            updatedStatus = "Dalam Peminjaman"
-                        } else if (peminjamans.status == "Dalam Peminjaman") {
-                            updatedStatus = "Sudah Selesai"
-                        }
-                        val statusRequest = StatusRequest(
-                            status = updatedStatus
-                        )
-                        peminjamanViewModel.updateStatusPeminjaman(
-                            statusRequest, peminjamans.id + 1
-                        ) {
-                            navController.navigate(Screen.ScreenHomePage.route) {
-                                popUpTo(Screen.ScreenHomePage.route) {
-                                    inclusive = true
-                                }
-                            }
-                        }
-
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
-                ) {
-                    Text(
-                        text = "Update Status",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
                 }
             }
         }

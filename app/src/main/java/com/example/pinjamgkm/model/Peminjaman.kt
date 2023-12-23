@@ -16,6 +16,11 @@ data class Peminjaman(
     val status: String,
 )
 
+data class Ruangan(
+    val ruang: String,
+    val status: String,
+)
+
 data class StatusRequest(
     val status: String,
 )
@@ -26,4 +31,8 @@ data class DefaultSuccessPeminjamanResponse(
 
 data class BackendResponsePeminjaman(
     val peminjamans: List<Peminjaman>
+)
+
+data class BackendResponseRuangan(
+    val ruangans: List<Ruangan>
 )
