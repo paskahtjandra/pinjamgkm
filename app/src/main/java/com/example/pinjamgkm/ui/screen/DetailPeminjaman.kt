@@ -11,15 +11,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -181,9 +184,24 @@ fun DetailPeminjaman(navController: NavController, snackbarHostState: SnackbarHo
                     })
             }
         },
-
         ) {
-        Column(
+        if (listRuangan.isEmpty()) {
+            // Show loading indicator
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .align(Alignment.Center),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+        if (listRuangan.isNotEmpty()) {
+            Column(
             modifier = Modifier.padding(
                 top = it.calculateTopPadding() + 12.dp, start = 12.dp, end = 12.dp
             ),
@@ -199,7 +217,6 @@ fun DetailPeminjaman(navController: NavController, snackbarHostState: SnackbarHo
                     label = "Keterangan Kegiatan",
                     value = peminjamans.keperluan,
                     onValueChange = { })
-            if (listRuangan.isNotEmpty()) {
                 if (peminjamans.kodeRuang.contains("4.")) {
                     Row(
                         modifier = Modifier
@@ -209,11 +226,25 @@ fun DetailPeminjaman(navController: NavController, snackbarHostState: SnackbarHo
                     ) {
                         Button(
                             onClick = {
+                                var statusKunci = ""
+                                if (ruanganinfo[0].status == "lock") {
+                                    statusKunci = "unlock"
+                                } else if (ruanganinfo[0].status == "unlock") {
+                                    statusKunci = "lock"}
+                                val statusRequest = StatusRequest(
+                                    status = statusKunci
+                                )
+
                                 var ruang = 1
-                                if (peminjamans.kodeRuang.contains(".1")) {
+                                if (peminjamans.kodeRuang.contains("4.1")) {
                                     ruang = 1
-                                } else ruang = 2
-                                peminjamanViewModel.unlockRoom(ruang) {
+                                } else if (peminjamans.kodeRuang.contains("4.2")) {
+                                    ruang = 2
+                                } else {
+                                    ruang = 3
+                                }
+
+                                peminjamanViewModel.unlockRoom(statusRequest, ruang) {
                                     navController.navigate(Screen.ScreenHomePage.route) {
                                         popUpTo(Screen.ScreenHomePage.route) {
                                             inclusive = true
@@ -235,11 +266,25 @@ fun DetailPeminjaman(navController: NavController, snackbarHostState: SnackbarHo
                         }
                         Button(
                             onClick = {
+                                var statusKunci = ""
+                                if (ruanganinfo[0].status == "lock") {
+                                    statusKunci = "unlock"
+                                } else if (ruanganinfo[0].status == "unlock") {
+                                   statusKunci = "lock"}
+                                val statusRequest = StatusRequest(
+                                    status = statusKunci
+                                )
+
                                 var ruang = 1
-                                if (peminjamans.kodeRuang.contains(".1")) {
+                                if (peminjamans.kodeRuang.contains("4.1")) {
                                     ruang = 1
-                                } else ruang = 2
-                                peminjamanViewModel.lockRoom(ruang) {
+                                } else if (peminjamans.kodeRuang.contains("4.2")) {
+                                    ruang = 2
+                                } else {
+                                    ruang = 3
+                                }
+
+                                peminjamanViewModel.lockRoom(statusRequest, ruang) {
                                     navController.navigate(Screen.ScreenHomePage.route) {
                                         popUpTo(Screen.ScreenHomePage.route) {
                                             inclusive = true

@@ -13,4 +13,5 @@ class Repository() {
     suspend fun updateStatus(requestBody: StatusRequest, peminjamanId: Int) = apiService.updateStatus(requestBody, peminjamanId)
     suspend fun lockRoom(idRuangan: Int) = apiService.lockRoom(idRuangan)
     suspend fun unlockRoom(idRuangan: Int) = apiService.unlockRoom(idRuangan)
+    suspend fun updateKunci(requestBody: StatusRequest, ruanganId: Int) = apiService.updateKunci(requestBody, ruanganId)
 }

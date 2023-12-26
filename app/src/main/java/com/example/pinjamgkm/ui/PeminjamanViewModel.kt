@@ -27,25 +27,21 @@ class PeminjamanViewModel(
 
     fun fetchPeminjaman() {
         viewModelScope.launch {
-            snackbarHostState.showSnackbar("Loading")
             val response = generalRepository.getPeminjamans()
             if (response.isSuccessful) {
                 val responsePeminjaman = response.body()?.peminjamans
                 peminjaman.postValue(responsePeminjaman?.map { it })
                 peminjamanFiltered.postValue(responsePeminjaman?.map { it })
-                snackbarHostState.showSnackbar("Sukses Mengambil Data")
             }
         }
     }
 
     fun fetchRuangan() {
         viewModelScope.launch {
-            snackbarHostState.showSnackbar("Menghubungi Kunci Ruangan")
             val response = generalRepository.getRuangans()
             if (response.isSuccessful) {
                 val responseRuangan = response.body()?.ruangans
                 ruangan.postValue(responseRuangan?.map { it })
-                snackbarHostState.showSnackbar("Sukses Terhubung")
             }
         }
     }
@@ -61,12 +57,13 @@ class PeminjamanViewModel(
         }
     }
 
-    fun lockRoom(ruanganId: Int, onFinish: () -> Unit){
+    fun lockRoom(statusRequest: StatusRequest, ruanganId: Int, onFinish: () -> Unit){
         viewModelScope.launch {
             snackbarHostState.showSnackbar("Sedang Mengunci Ruangan")
 
             val result = RetrofitInstance.safeApiCall {
                 generalRepository.lockRoom(ruanganId)
+                generalRepository.updateKunci(statusRequest,ruanganId)
             }
 
             when (result) {
@@ -93,11 +90,12 @@ class PeminjamanViewModel(
         }
     }
 
-    fun unlockRoom(ruanganId: Int, onFinish: () -> Unit){
+    fun unlockRoom(statusRequest: StatusRequest,ruanganId: Int, onFinish: () -> Unit){
         viewModelScope.launch {
             snackbarHostState.showSnackbar("Sedang Membuka Ruangan")
             val result = RetrofitInstance.safeApiCall {
                 generalRepository.unlockRoom(ruanganId)
+                generalRepository.updateKunci(statusRequest,ruanganId)
             }
 
             when (result) {

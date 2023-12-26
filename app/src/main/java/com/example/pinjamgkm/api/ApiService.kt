@@ -27,4 +27,6 @@ interface ApiService {
     @POST("api/v1/peminjaman/unlockroom/{idRuangan}")
     suspend fun unlockRoom(@Path("idRuangan") idRuangan: Int): Response<DefaultSuccessPeminjamanResponse>
 
+    @POST("api/v1/peminjaman/updateKunci/{ruanganId}")
+    suspend fun updateKunci(@Body requestBody: StatusRequest, @Path("ruanganId") ruanganId: Int): Response<DefaultSuccessPeminjamanResponse>
 }
